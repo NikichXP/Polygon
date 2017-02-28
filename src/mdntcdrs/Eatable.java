@@ -9,7 +9,7 @@ public abstract class Eatable {
 		this.title = this.getClass().getSimpleName();
 	}
 
-	protected static MealKind kindOf;
+	protected MealKind kindOf;
 
 	public int getFoodChainLevel() {
 		return foodChainLevel;

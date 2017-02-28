@@ -27,8 +27,8 @@ public class Human extends Animal {
 
 	@Override
 	public boolean eat(Eatable e) {
-		if (isVegetarian) {
-			if (e instanceof Vegetable) {
+		if (isVegetarian) { //actually can be another class?
+			if (e.kindOf == MealKind.FRUIT || e.kindOf == MealKind.VEGETABLE) {
 				return super.eat(e);
 			} else {
 				System.out.println(this.getTitle() + " is vegetarian =(. can't eat " + e.getTitle());
