@@ -1,4 +1,4 @@
-package mc;
+package mdntcdrs;
 
 public class Worm extends Animal{
 

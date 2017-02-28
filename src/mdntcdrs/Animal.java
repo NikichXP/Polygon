@@ -1,4 +1,4 @@
-package mc;
+package mdntcdrs;
 
 public abstract class Animal implements Eatable {
 

@@ -1,4 +1,4 @@
-package mc;
+package mdntcdrs;
 
 public class Main {
 
@@ -20,6 +20,7 @@ public class Main {
 
 		animals[0].eat(grass);
 		animals[0].eat(animals[1]);
+		animals[2].eat(animals[1]);
 
 	}
 
