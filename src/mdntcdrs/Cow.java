@@ -2,8 +2,9 @@ package mdntcdrs;
 
 public class Cow extends Animal {
 
-	static {
+	{
 		foodChainLevel = 2;
+		kindOf = MealKind.MAMMAL;
 	}
 
 	public Cow () {

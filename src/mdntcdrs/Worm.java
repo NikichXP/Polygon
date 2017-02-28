@@ -2,8 +2,9 @@ package mdntcdrs;
 
 public class Worm extends Animal{
 
-	static {
+	{
 		foodChainLevel = 2;
+		kindOf = MealKind.REPTILE;
 	}
 
 	public Worm () {

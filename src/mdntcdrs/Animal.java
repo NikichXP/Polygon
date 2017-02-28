@@ -1,31 +1,22 @@
 package mdntcdrs;
 
-public abstract class Animal implements Eatable {
+import java.util.Arrays;
 
-	protected static int foodChainLevel;
-	protected String title;
+public abstract class Animal extends Eatable {
+
+	public static MealKind[] eats = null;
 
 	public boolean eat(Eatable e) {
 		if (this.getFoodChainLevel() > e.getFoodChainLevel()) {
-			System.out.println(this.getTitle() + " eaten " + e.getTitle());
-			return true;
-		} else {
-			System.out.println(this.getTitle() + " can't eat " + e.getTitle());
-			return false;
+			if (Arrays.asList(this.eats).contains(e.kindOf)) {
+				System.out.println(this.getTitle() + " eaten " + e.getTitle());
+				return true;
+			}
 		}
-	}
-	@Override
-	public int getFoodChainLevel() {
-		return foodChainLevel;
+		System.out.println(this.getTitle() + " can't eat " + e.getTitle());
+		return false;
+
 	}
 
-	@Override
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
 
 }

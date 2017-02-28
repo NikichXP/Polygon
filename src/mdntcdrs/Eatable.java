@@ -1,8 +1,26 @@
 package mdntcdrs;
 
-public interface Eatable {
+public abstract class Eatable {
 
-	int getFoodChainLevel();
-	String getTitle();
+	protected int foodChainLevel;
+	protected String title;
+
+	public Eatable() {
+		this.title = this.getClass().getSimpleName();
+	}
+
+	protected static MealKind kindOf;
+
+	public int getFoodChainLevel() {
+		return foodChainLevel;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
 
 }

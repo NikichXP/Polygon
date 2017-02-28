@@ -4,23 +4,18 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		Eatable grass = new Eatable() {
-			@Override
-			public int getFoodChainLevel() {
-				return 0;
-			}
+		FoodRationConfigurer.configureFoodRation();
 
-			@Override
-			public String getTitle() {
-				return "Grass";
-			}
-		};
+		Eatable grass = new Vegetable();
 
 		Animal animals[] = {new Cow(), new Lion(), new Human("Dave")};
 
+		Animal e1 = new Ktulhu();
+
 		animals[0].eat(grass);
-		animals[0].eat(animals[1]);
+		animals[1].eat(animals[0]);
 		animals[2].eat(animals[1]);
+		e1.eat(grass);
 
 	}
 
