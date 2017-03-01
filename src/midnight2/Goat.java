@@ -1,4 +1,4 @@
-package midnigt2;
+package midnight2;
 
 public class Goat extends VeganAnimal {
 }
