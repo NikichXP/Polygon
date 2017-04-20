@@ -1,7 +1,10 @@
 package chebanenko;
 
+import lombok.Data;
+
 import java.util.*;
 
+@Data
 public class Component {
 
     private int sizeX, sizeY;
@@ -33,47 +36,4 @@ public class Component {
         this.priority +=  c.length;
     }
 
-    public ArrayList<Component> getLinks() {
-        return links;
-    }
-
-    public int getSizeX() {
-        return sizeX;
-    }
-
-    public void setSizeX(int sizeX) {
-        this.sizeX = sizeX;
-    }
-
-    public int getSizeY() {
-        return sizeY;
-    }
-
-    public void setSizeY(int sizeY) {
-        this.sizeY = sizeY;
-    }
-
-    public int getPosX() {
-        return posX;
-    }
-
-    public void setPosX(int posX) {
-        this.posX = posX;
-    }
-
-    public int getPosY() {
-        return posY;
-    }
-
-    public void setPosY(int posY) {
-        this.posY = posY;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 }
