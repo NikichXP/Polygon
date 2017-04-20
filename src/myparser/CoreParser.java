@@ -1,6 +1,7 @@
 package myparser;
 
 import myparser.configurer.GlobalConfig;
+import myparser.entities.EntitySetup;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -43,26 +44,31 @@ public class CoreParser {
 		int start = 0;
 		for (int i = 1; i < lines.size(); i++) {
 			if (lines.get(i).matches("[$]\\S*[$]")) {
-				switch (lines.get(start).replace('$', ' ').trim()) {
-					case "global":
-						GlobalConfig.initConfigList(lines.subList(start + 1, i));
-						break;
-					case "entity":
-						EntitySetup.setEntities(lines.subList(start, i));
-						break;
-					case "spring":
-						analyze(lines.subList(start, i));
-						break;
-				}
+				route(lines.subList(start, i));
 				start = i;
 			}
 		}
+		route(lines.subList(start, lines.size()));
 
 	}
 
+	private static void route(List<String> lines) {
+		switch (lines.get(0).replace('$', ' ').trim()) {
+			case "global":
+				GlobalConfig.initConfigList(lines.subList(1, lines.size()));
+				break;
+			case "entity":
+				EntitySetup.setEntities(lines.subList(1, lines.size()));
+				break;
+			case "spring":
+				analyze(lines.subList(1, lines.size()));
+				break;
+		}
+	}
+
 	private static void analyze(List<String> strings) {
-		strings.forEach(x -> System.out.println(x));
-		System.out.println(".......");
+//		strings.forEach(x -> System.out.println("\\" + x));
+//		System.out.println(".......");
 	}
 
 }

@@ -11,7 +11,7 @@ public class GlobalConfig {
 
 	public static void initConfigList(List<String> args) {
 
-		System.out.println("Global config recieve:");
+//		System.out.println("Global config recieve:");
 		args.stream()
 				.map(x -> (!x.contains("//")) ? x : x.substring(0, x.indexOf("//")))
 				.forEach(x -> {
@@ -19,10 +19,10 @@ public class GlobalConfig {
 						//TODO Here we need to import addons
 					}
 
-					switch (x.substring(0, x.indexOf(':'))) {
-						case "'#lombok'":
-
-					}
+//					switch (x.substring(0, x.indexOf(':'))) {
+//						case "'#lombok'":
+//
+//					}
 				});
 
 	}
