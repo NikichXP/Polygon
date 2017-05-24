@@ -13,7 +13,7 @@ public class Main {
 		createLinks();
 //		System.out.println(checkLinks());
 		
-		createTasks2(50, 1, 5, 0.6);
+		createTasks2(10, 1, 5, 0.4);
 		System.out.println(checkTasks());
 		printLinks();
 		
@@ -28,14 +28,25 @@ public class Main {
 		);
 		for (int i = 0; i < startNodes.length; i++) {
 			if (!startNodes[i]) {
-				getRoutes(tasks.get(i)).forEach(
-						list -> list.stream()
-								.map(task -> task.getId() + " (" + task.getWeight() + ")")
-								.reduce((s1, s2) -> s1 + " -> " + s2)
-								.ifPresent(System.out::println)
+				getRoutes(tasks.get(i)).forEach(list ->
+						System.out.println(printRoute(list))
 				);
 			}
 		}
+	}
+	
+	private static String printRoute (LinkedList<Task> list) {
+		/*
+			.map(task -> task.getId() + " (" + task.getWeight() + ")")
+			.reduce((s1, s2) -> s1 + " -> " + s2)
+			.ifPresent(System.out::println)
+		 */
+		StringBuilder sb = new StringBuilder(list.get(0).print());
+		for (int i = 0; i < list.size() - 1; i++) {
+			Task.Link link = list.get(i).findNext(list.get(i+1));
+			sb.append(" -").append(link.weight).append("-> ").append(link.link.print());
+		}
+		return sb.toString();
 	}
 	
 	private static LinkedList<LinkedList<Task>> getRoutes (Task task) {

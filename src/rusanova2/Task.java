@@ -48,6 +48,13 @@ public class Task {
 		return "{ id : " + id + ", weight : " + weight + ", links : [" + next.stream().map(to -> to.link.getId() + "").reduce((l1, l2) -> l1 + ", " + l2).orElse("") + "]}";
 	}
 	
+	public String print () {
+		return getId() + " (" + getWeight() + ")";
+	}
+	
+	public Link findNext (Task task) {
+		return next.stream().filter(e -> e.link.id == task.id).findAny().orElse(null);
+	}
 	
 	
 	public static class Link {
