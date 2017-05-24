@@ -10,21 +10,57 @@ public class Task {
 	
 	int id;
 	static int id_gen = 0;
-	List<Task> next = new ArrayList<>();
-	int time;
+	List<Link> next = new ArrayList<>();
+	int weight = 1;
 	
 	public Task () {
 		this.id = id_gen++;
+	}
+	
+	public Task (int weight) {
+		this();
+		this.weight = weight;
 	}
 	
 	public void addNext (Task task) {
 		if (task == this) {
 			return;
 		}
-		next.add(task);
+		next.add(new Link(task));
+	}
+	
+	public void addNext (Task task, int weight) {
+		if (task == this) {
+			return;
+		}
+		if (next.stream().filter(link -> link.link.id == task.id).findAny().orElse(null) == null) {
+			next.add(new Link(task, weight));
+		} else {
+			next.stream().filter(link -> link.link.id == task.id).findAny().ifPresent(link -> link.weight += 1);
+		}
+	}
+	
+	public void remove (Task task) {
+		next.removeIf(link -> link.link.id == task.id);
 	}
 	
 	public String toString() {
-		return "{ id : " + id + ", links : [" + next.stream().map(link -> link.getId() + "").reduce((l1, l2) -> l1 + ", " + l2).orElse("") + "]}";
+		return "{ id : " + id + ", weight : " + weight + ", links : [" + next.stream().map(to -> to.link.getId() + "").reduce((l1, l2) -> l1 + ", " + l2).orElse("") + "]}";
+	}
+	
+	
+	
+	public static class Link {
+		Task link;
+		int weight;
+		
+		public Link (Task task) {
+			this.link = task;
+			this.weight = 1;
+		}
+		public Link (Task task, int weight) {
+			this.link = task;
+			this.weight = weight;
+		}
 	}
 }

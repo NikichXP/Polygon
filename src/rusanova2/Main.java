@@ -1,21 +1,94 @@
 package rusanova2;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Main {
 	
-	static List<Core> cores = new ArrayList<>();
-	static List<Task> tasks = new ArrayList<>();
+	private static List<Core> cores = new ArrayList<>();
+	private static List<Task> tasks = new ArrayList<>();
+	private static Random rand = new Random();
 	
 	public static void main (String[] args) {
 		
 		createLinks();
 //		System.out.println(checkLinks());
 		
-		createTasks();
+		createTasks2(50, 1, 5, 0.6);
 		System.out.println(checkTasks());
+		printLinks();
 		
+	}
+	
+	private static void printLinks () {
+		boolean[] startNodes = new boolean[tasks.size()];
+		tasks.forEach(task -> task.next.forEach(
+				link -> {
+					startNodes[link.link.id] = true;
+				})
+		);
+		for (int i = 0; i < startNodes.length; i++) {
+			if (!startNodes[i]) {
+				getRoutes(tasks.get(i)).forEach(
+						list -> list.stream()
+								.map(task -> task.getId() + " (" + task.getWeight() + ")")
+								.reduce((s1, s2) -> s1 + " -> " + s2)
+								.ifPresent(System.out::println)
+				);
+			}
+		}
+	}
+	
+	private static LinkedList<LinkedList<Task>> getRoutes (Task task) {
+		LinkedList<LinkedList<Task>> ret = new LinkedList<>();
+		if (task.next.size() == 0) {
+			LinkedList<Task> rx = new LinkedList<>();
+			rx.add(task);
+			ret.add(rx);
+			return ret;
+		} else {
+			for (Task.Link link : task.next) {
+				ret.addAll(getRoutes(link.link));
+			}
+			ret.forEach(list -> list.push(task));
+			return ret;
+		}
+	}
+	
+	private static void createTasks2 (int tasksCount, int minWegth, int maxWeight, double corellation) { //corellation = nodes / (nodes + links)
+		
+		for (int i = 0; i < tasksCount; i++) {
+			tasks.add(new Task(rand.nextInt(maxWeight - minWegth) + minWegth));
+		}
+		
+		while (calculateCorrelation() > corellation) {
+			int from = rand.nextInt(tasksCount);
+			int to = rand.nextInt(tasksCount);
+			
+			System.out.println("trying add link " + from + " -> " + to);
+			
+			tasks.get(from).addNext(tasks.get(to), 1);
+			
+			if (!checkTasks()) {
+				tasks.get(from).remove(tasks.get(to));
+				System.out.println("error cycle link " + from + " -> " + to);
+				System.gc();
+			}
+		}
+		
+	}
+	
+	private static double calculateCorrelation () {
+		
+		int linkSum = 0, taskSum = 0;
+		
+		for (Task task : tasks) {
+			taskSum += task.getWeight();
+			for (Task.Link link : task.next) {
+				linkSum += link.weight;
+			}
+		}
+		
+		return (taskSum + 0.0) / (taskSum + linkSum);
 	}
 	
 	private static void createTasks () {
@@ -43,12 +116,11 @@ public class Main {
 			return false;
 		}
 		boolean flag = true;
-		for (Task next : cur.next) {
-			flag = flag & innerRecursive(next, step + 1);
+		for (Task.Link next : cur.next) {
+			flag = flag & innerRecursive(next.link, step + 1);
 		}
 		return flag;
 	}
-	
 	
 	private static void createLinks () {
 		for (int i = 0; i < 10; i++) {
@@ -87,5 +159,6 @@ public class Main {
 	private static void nextTask (int a, int b) {
 		tasks.get(a).addNext(tasks.get(b));
 	}
+	
 	
 }
