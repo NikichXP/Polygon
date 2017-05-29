@@ -4,7 +4,6 @@ import lombok.Data;
 
 import java.util.LinkedList;
 
-@Data
 public class Core {
 	
 	public static int id_gen = 0;
@@ -24,7 +23,7 @@ public class Core {
 	}
 	
 	public String toString() {
-		return "{ id : " + id + ", links : [" + links.stream().map(link -> link.getId() + "").reduce((l1, l2) -> l1 + ", " + l2).orElse("") + "]}";
+		return "{ id : " + id + ", links : [" + links.stream().map(link -> link.id + "").reduce((l1, l2) -> l1 + ", " + l2).orElse("") + "]}";
 	}
 	
 }
