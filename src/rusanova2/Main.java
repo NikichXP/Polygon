@@ -14,7 +14,7 @@ public class Main {
 //		System.out.println(checkLinks());
 		System.out.println("Cores are linked: " + checkLinks());
 		
-		createTasks();//10, 1, 5, 0.4
+		createTasks2(5, 1, 5, 0.2, 10, 30);//10, 1, 5, 0.4
 		System.out.println("Tasks are uncycled: " + checkTasks());
 		if (checkTasks()) {
 			printLinks();
@@ -65,25 +65,32 @@ public class Main {
 			return ret;
 		}
 	}
-	private static void createTasks2 (int tasksCount, int minWegth, int maxWeight, double corellation) { //corellation = nodes / (nodes + links)
+	private static void createTasks2(int tasksCount, int minWegth, int maxWeight, double corellation, int minLink, int maxLink) { //corellation = nodes / (nodes + links)
 		
 		for (int i = 0; i < tasksCount; i++) {
 			tasks.add(new Task(rand.nextInt(maxWeight - minWegth) + minWegth));
 		}
+
+		int from = 0, to = 0;
 		
 		while (calculateCorrelation() > corellation) {
-			int from = rand.nextInt(tasksCount);
-			int to = rand.nextInt(tasksCount);
+			from = rand.nextInt(tasksCount);
+			to = rand.nextInt(tasksCount);
 			
 			System.out.println("trying add link " + from + " -> " + to);
 			
-			tasks.get(from).addNext(tasks.get(to), 1);
+			tasks.get(from).addNext(tasks.get(to), rand.nextInt(maxLink - minLink) + minLink);
 			
 			if (!checkTasks()) {
 				tasks.get(from).remove(tasks.get(to));
 				System.out.println("error cycle link " + from + " -> " + to);
 				System.gc();
 			}
+
+
+		}
+		while (calculateCorrelation() < corellation) {
+			tasks.get(from).addNext(tasks.get(to), -1);
 		}
 		
 	}

@@ -30,13 +30,18 @@ public class Task {
 	}
 	
 	public void addNext (Task task, int weight) {
+		if (weight == 0) {
+			return;
+		}
 		if (task == this) {
 			return;
 		}
 		if (next.stream().filter(link -> link.link.id == task.id).findAny().orElse(null) == null) {
-			next.add(new Link(task, weight));
+			if (weight > 0) {
+				next.add(new Link(task, weight));
+			}
 		} else {
-			next.stream().filter(link -> link.link.id == task.id).findAny().ifPresent(link -> link.weight += 1);
+			next.stream().filter(link -> link.link.id == task.id).findAny().ifPresent(link -> link.weight += weight);
 		}
 	}
 	
