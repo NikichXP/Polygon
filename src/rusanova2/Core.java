@@ -40,12 +40,6 @@ public class Core {
 		freeSince = task.plan(freeSince, this);
 	}
 
-//	public int expectedRouting (Core from, int startCycle) {
-//		if (links.contains(from)) {
-//			return
-//		}
-//	}
-
 	public int transferOut(int from, int weight) {
 		while (weight > 0) {
 			if (linkingOut.get(from) == null || !linkingOut.get(from)) {

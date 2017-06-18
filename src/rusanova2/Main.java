@@ -3,11 +3,10 @@ package rusanova2;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("PointlessBooleanExpression")
 public class Main {
 
 	static List<Core> cores = new ArrayList<>();
-	static List<Task> tasks = new ArrayList<>();
+	static List<Task> gtasks = new ArrayList<>();
 	static int[][] connMatrix;
 	private static Random rand = new Random();
 
@@ -25,7 +24,7 @@ public class Main {
 
 		//var 3
 		System.out.println("\nVariant 3: \n");
-		List<Task> taskList = tasks.stream()
+		List<Task> taskList = gtasks.stream()
 				.sorted(Comparator.comparingInt(t -> -t.getCriticalTime()))
 				.peek(System.out::println)
 				.collect(Collectors.toList());
@@ -35,7 +34,11 @@ public class Main {
 //		List<Task> taskList = getVar4();
 
 //		input2(taskList);
-		input3(taskList);
+		//var 3 (7)
+		List<Core> prior = cores.stream().sorted((c1, c2) -> c2.links.size() - c1.links.size())
+			.collect(Collectors.toList());
+		
+		doWork(taskList, prior);
 
 		System.out.println();
 		for (Core core : cores) {
@@ -46,14 +49,12 @@ public class Main {
 //		getVar5();
 	}
 
-	private static void input3(List<Task> taskList) {
-		List<Core> prior = cores.stream().sorted((c1, c2) -> c2.links.size() - c1.links.size())
-				.collect(Collectors.toList());
+	private static void doWork (List<Task> tasks, List<Core> corePriority) {
 		int cycle = 0;
-		for (Task task : taskList) {
+		for (Task task : tasks) {
 			boolean put = false;
 			do {
-				for (Core core : prior) {
+				for (Core core : corePriority) {
 					if (core.canPut(task, cycle)) {
 						core.putTask(task);
 						put = true;
@@ -63,7 +64,7 @@ public class Main {
 				if (!put) {
 					cycle++;
 				}
-			} while (put == false);
+			} while (!put);
 		}
 	}
 
@@ -72,7 +73,7 @@ public class Main {
 	}
 
 	private static boolean allTasksArePut() {
-		for (Task task : tasks) {
+		for (Task task : gtasks) {
 			if (task.executeCore == null) {
 				return false;
 			}
@@ -95,20 +96,19 @@ public class Main {
 	}
 
 	private static List<Task> getVar4() {
-		return tasks.stream().sorted((t1, t2) -> (t1.getLongestRoute().size() != t2.getLongestRoute().size())
+		return gtasks.stream().sorted((t1, t2) -> (t1.getLongestRoute().size() != t2.getLongestRoute().size())
 				? t2.getLongestRoute().size() - t1.getLongestRoute().size()
 				: ((t2.next.size() + t2.incomingTask.size()) - (t1.next.size() + t1.incomingTask.size()))
 		).peek(System.out::println).collect(Collectors.toList());
 	}
-
-
+	
 	private static void getVar5() {
-		List<Task> crits = tasks.stream()
+		List<Task> crits = gtasks.stream()
 				.map(Task::getLongestRoute)
 				.max(Comparator.comparingInt(List::size))
 				.orElseThrow(() -> new IllegalArgumentException("No routes found"));
 
-		boolean added[] = new boolean[tasks.size()];
+		boolean added[] = new boolean[gtasks.size()];
 //		System.out.println(crits);
 		System.out.println("crit route: " + crits.stream().map(task -> task.id + "").reduce((s1, s2) -> s1 + " -> " + s2).orElse(""));
 		crits.forEach(crt -> {
@@ -116,7 +116,7 @@ public class Main {
 			System.out.println(crt);
 		});
 
-		tasks.stream().sorted((task1, task2) -> {
+		gtasks.stream().sorted((task1, task2) -> {
 			if (retain(crits, task1.getCriticalRoute()) != retain(crits, task2.getCriticalRoute())) {
 				return retain(crits, task2.getCriticalRoute()) - retain(crits, task1.getCriticalRoute());
 			}
@@ -126,15 +126,6 @@ public class Main {
 
 	public static int retain(List<Task> tasks, List<Task> links) {
 		return (int) links.stream().filter(tasks::contains).count();
-//		int ret = 0;
-//		for (Task task : tasks) {
-//			for (Task.Link link : links) {
-//				if (link.link.id == task.id) {
-//					ret++;
-//				}
-//			}
-//		}
-//		return ret;
 	}
 
 	private static void printLinks() {
@@ -142,15 +133,15 @@ public class Main {
 			System.out.println("Tasks are cycled, can not print");
 			return;
 		}
-		boolean[] startNodes = new boolean[tasks.size()];
-		tasks.forEach(task -> task.next.forEach(
+		boolean[] startNodes = new boolean[gtasks.size()];
+		gtasks.forEach(task -> task.next.forEach(
 				link -> {
 					startNodes[link.link.id] = true;
 				})
 		);
 		for (int i = 0; i < startNodes.length; i++) {
 			if (!startNodes[i]) {
-				getRoutes(tasks.get(i)).forEach(list ->
+				getRoutes(gtasks.get(i)).forEach(list ->
 						System.out.println(printRoute(list))
 				);
 			}
@@ -185,7 +176,7 @@ public class Main {
 	private static void createTasks2(int tasksCount, int minWegth, int maxWeight, double corellation, int minLink, int maxLink) { //corellation = nodes / (nodes + links)
 
 		for (int i = 0; i < tasksCount; i++) {
-			tasks.add(new Task(rand.nextInt(maxWeight - minWegth) + minWegth));
+			gtasks.add(new Task(rand.nextInt(maxWeight - minWegth) + minWegth));
 		}
 
 		int from = 0, to = 0;
@@ -196,10 +187,10 @@ public class Main {
 
 			System.out.println("trying add link " + from + " -> " + to);
 
-			tasks.get(from).addNext(tasks.get(to), rand.nextInt(maxLink - minLink) + minLink);
+			gtasks.get(from).addNext(gtasks.get(to), rand.nextInt(maxLink - minLink) + minLink);
 
 			if (!checkTasks()) {
-				tasks.get(from).remove(tasks.get(to));
+				gtasks.get(from).remove(gtasks.get(to));
 				System.out.println("error cycle link " + from + " -> " + to);
 			}
 
@@ -207,7 +198,7 @@ public class Main {
 		}
 		while (calculateCorrelation() < corellation) {
 			System.out.println("here");
-			tasks.get(from).addNext(tasks.get(to), -1);
+			gtasks.get(from).addNext(gtasks.get(to), -1);
 		}
 
 	}
@@ -216,7 +207,7 @@ public class Main {
 
 		int linkSum = 0, taskSum = 0;
 
-		for (Task task : tasks) {
+		for (Task task : gtasks) {
 			taskSum += task.getWeight();
 			for (Task.Link link : task.next) {
 				linkSum += link.weight;
@@ -225,17 +216,16 @@ public class Main {
 
 		return (taskSum + 0.0) / (taskSum + linkSum);
 	}
-
 	private static void createTasks() {
 //		for (int i = 0; i < 5; i++) {
-		tasks.add(new Task(2));
-		tasks.add(new Task(5));
-		tasks.add(new Task(7));
-		tasks.add(new Task(1));
-		tasks.add(new Task(1));
-//		tasks.add(new Task(1));
-//		tasks.add(new Task(2));
-//		tasks.add(new Task(7));
+		gtasks.add(new Task(2));
+		gtasks.add(new Task(5));
+		gtasks.add(new Task(7));
+		gtasks.add(new Task(1));
+		gtasks.add(new Task(1));
+//		gtasks.add(new Task(1));
+//		gtasks.add(new Task(2));
+//		gtasks.add(new Task(7));
 //		}
 
 		nextTask(0, 4);
@@ -255,27 +245,25 @@ public class Main {
 //		nextTask(9, 0);
 
 	}
-
 	private static boolean checkTasks() {
 		boolean res = true;
-		for (Task task : tasks) {
+		for (Task task : gtasks) {
 			res = res & innerRecursive(task, 0);
 		}
 		return res;
 	}
-
 	private static boolean findCyclesByWarshell() {
-		int steps[][] = new int[tasks.size()][tasks.size()];
-		for (int i = 0; i < tasks.size(); i++)
-			for (int j = 0; j < tasks.size(); j++)
+		int steps[][] = new int[gtasks.size()][gtasks.size()];
+		for (int i = 0; i < gtasks.size(); i++)
+			for (int j = 0; j < gtasks.size(); j++)
 				steps[i][j] = 0;
 
-		tasks.forEach(task -> task.next.forEach(link ->
+		gtasks.forEach(task -> task.next.forEach(link ->
 				steps[task.id][link.link.id] = 1
 		));
-		for (int i = 0; i < tasks.size(); i++) {
-			for (int j = 0; j < tasks.size(); j++) {
-				for (int k = 0; k < tasks.size(); k++) {
+		for (int i = 0; i < gtasks.size(); i++) {
+			for (int j = 0; j < gtasks.size(); j++) {
+				for (int k = 0; k < gtasks.size(); k++) {
 					if (steps[i][j] != 0 && steps[j][k] != 0) {
 						steps[j][k] = steps[i][j] + steps[j][k];
 					}
@@ -283,18 +271,17 @@ public class Main {
 			}
 		}
 
-		for (int i = 0; i < tasks.size(); i++) {
+		for (int i = 0; i < gtasks.size(); i++) {
 			System.out.println();
-			for (int j = 0; j < tasks.size(); j++) {
+			for (int j = 0; j < gtasks.size(); j++) {
 				System.out.print((steps[i][j] < 1000) ? steps[i][j] + "\t" : "*\t");
 			}
 		}
 
 		return false;
 	}
-
 	private static boolean innerRecursive(Task cur, int step) {
-		if (step > tasks.size()) {
+		if (step > gtasks.size()) {
 			return false;
 		}
 		boolean flag = true;
@@ -303,7 +290,6 @@ public class Main {
 		}
 		return flag;
 	}
-
 	private static void createLinks() {
 		for (int i = 0; i < 4; i++) {
 			cores.add(new Core());
@@ -350,7 +336,6 @@ public class Main {
 //			link(i, i + 1);
 //		}
 	}
-
 	private static boolean checkLinks() {
 		boolean[] conns = new boolean[cores.size()]; //determines can we get core[i] via core[0]
 		conns[0] = true;
@@ -369,17 +354,14 @@ public class Main {
 		}
 		return x;
 	}
-
 	private static void link(int a, int b) {
 		cores.get(a).addLink(cores.get(b));
 	}
-
 	private static void nextTask(int a, int b) {
-		tasks.get(a).addNext(tasks.get(b));
+		gtasks.get(a).addNext(gtasks.get(b));
 	}
-
 	private static void nextTask(int a, int b, int weight) {
-		tasks.get(a).addNext(tasks.get(b), weight);
+		gtasks.get(a).addNext(gtasks.get(b), weight);
 	}
 
 }
