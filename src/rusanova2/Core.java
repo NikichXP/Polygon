@@ -35,9 +35,9 @@ public class Core {
 		return steps(other.id);
 	}
 
-	public void putTask(Task task) {
+	public void putTask(Task task, int startCycle) {
 		schedule.add(task);
-		freeSince = task.plan(freeSince, this);
+		freeSince = task.plan2(startCycle, this);
 	}
 
 	public int transferOut(int from, int weight) {
